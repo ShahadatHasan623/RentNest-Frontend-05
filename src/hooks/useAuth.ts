@@ -1,20 +1,24 @@
 "use client";
 
-
 import { useQuery } from "@tanstack/react-query";
 import { getMe } from "../services/auth.service";
 
+
 export const useAuth = () => {
-  const query = useQuery({
-    queryKey: ["me"],
+  const {
+    data: user,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["auth-user"],
     queryFn: getMe,
     retry: false,
   });
 
   return {
-    user: query.data,
-    isLoading: query.isLoading,
-    isError: query.isError,
-    isAuthenticated: !!query.data,
+    user,
+    isLoading,
+    isError,
+    isAuthenticated: !!user,
   };
 };

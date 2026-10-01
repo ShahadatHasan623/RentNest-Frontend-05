@@ -1,5 +1,4 @@
 import axiosInstance from "../lib/axios";
-import { User } from "../types/auth";
 
 
 export interface LoginPayload {
@@ -14,26 +13,38 @@ export interface RegisterPayload {
   role: "TENANT" | "LANDLORD";
 }
 
-export const loginUser = async (payload: LoginPayload) => {
-  const { data } = await axiosInstance.post("/auth/login", payload);
+export const loginUser = async (
+  payload: LoginPayload
+) => {
+  const { data } = await axiosInstance.post(
+    "/auth/login",
+    payload
+  );
 
   return data;
 };
 
-export const registerUser = async (payload: RegisterPayload) => {
-  const { data } = await axiosInstance.post("/auth/register", payload);
+export const registerUser = async (
+  payload: RegisterPayload
+) => {
+  const { data } = await axiosInstance.post(
+    "/auth/register",
+    payload
+  );
 
   return data;
 };
 
-export const getMe = async (): Promise<User> => {
-  const { data } = await axiosInstance.get("/users/me");
+export const getMe = async () => {
+  const { data } = await axiosInstance.get("/auth/me");
 
   return data?.data ?? data;
 };
 
 export const logoutUser = async () => {
-  const { data } = await axiosInstance.post("/auth/logout");
+  const { data } = await axiosInstance.post(
+    "/auth/logout"
+  );
 
   return data;
 };
