@@ -23,7 +23,7 @@ export const getMyRentalRequests = async (): Promise<
   RentalRequest[]
 > => {
   const { data } = await axiosInstance.get(
-    "/rentals/my"
+    "/rentals"
   );
 
   return data?.data ?? data;

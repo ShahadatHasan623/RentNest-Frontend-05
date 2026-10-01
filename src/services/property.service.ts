@@ -16,12 +16,10 @@ export const getProperties = async (
 ): Promise<Property[]> => {
   const { data } = await axiosInstance.get(
     "/properties",
-    {
-      params,
-    }
+    { params }
   );
 
-  return data?.data ?? data;
+  return data?.data?.result ?? data?.data ?? data;
 };
 
 export const getPropertyById = async (
