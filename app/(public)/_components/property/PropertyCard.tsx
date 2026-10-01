@@ -1,4 +1,4 @@
-
+import Image from "next/image";
 import Link from "next/link";
 import {
   Bath,
@@ -13,7 +13,6 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Property } from "@/src/types/property";
-import Image from "next/image";
 
 
 

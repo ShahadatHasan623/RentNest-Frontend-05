@@ -4,6 +4,7 @@ import PropertiesContent from "../_components/property/PropertiesContent";
 
 
 
+
 export default function PropertiesPage() {
   return (
     <main className="min-h-screen bg-slate-50">

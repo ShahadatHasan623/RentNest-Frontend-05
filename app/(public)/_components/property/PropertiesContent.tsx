@@ -9,6 +9,8 @@ import { useProperties } from "@/src/hooks/useProperties";
 
 
 
+
+
 export default function PropertiesContent() {
   const searchParams = useSearchParams();
 
@@ -31,7 +33,6 @@ export default function PropertiesContent() {
     isLoading,
     isError,
   } = useProperties(params);
-  console.log("properties", properties);
 
   if (isLoading) {
     return (

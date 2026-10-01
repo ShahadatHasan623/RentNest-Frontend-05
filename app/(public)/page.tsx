@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import PropertyList from "./_components/property/PropertyList";
+
 ;
 
 export default function HomePage() {
@@ -78,7 +79,7 @@ export default function HomePage() {
             </Button>
           </div>
 
-          <PropertyList />
+          <PropertyList/>
         </div>
       </section>
 
