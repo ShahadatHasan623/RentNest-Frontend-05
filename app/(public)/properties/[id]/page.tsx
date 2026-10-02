@@ -1,9 +1,13 @@
-import React from 'react'
+const PropertyDetailsPage = async ({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) => {
+  const { id } = await params;
 
-const page = () => {
-  return (
-    <div>page</div>
-  )
-}
+  // getPropertyById(id)
 
-export default page
+  return <div>Property Details</div>;
+};
+
+export default PropertyDetailsPage;
