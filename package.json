@@ -17,6 +17,7 @@
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
     "init": "^0.1.2",
+    "jsonwebtoken": "^9.0.3",
     "lucide-react": "^1.49.0",
     "next": "16.3.8",
     "radix-ui": "^1.6.7",
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

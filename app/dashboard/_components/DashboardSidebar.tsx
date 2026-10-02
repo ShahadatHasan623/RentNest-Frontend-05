@@ -15,7 +15,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/src/hooks/useAuth";
-
+import LogoutButton from "@/app/(auth)/_components/LogoutButton";
 
 const tenantItems = [
   {
@@ -88,19 +88,13 @@ export default function DashboardSidebar() {
 
   if (isLoading) {
     return (
-      <aside className="hidden w-64 border-r bg-white md:block">
-        <div className="p-6">
-          Loading...
-        </div>
+      <aside className="hidden min-h-screen w-64 border-r bg-white md:block">
+        <div className="p-6">Loading...</div>
       </aside>
     );
   }
 
-  let items = [];
-
-  if (user?.role === "TENANT") {
-    items = tenantItems;
-  }
+  let items = tenantItems;
 
   if (user?.role === "LANDLORD") {
     items = landlordItems;
@@ -111,24 +105,17 @@ export default function DashboardSidebar() {
   }
 
   return (
-    <aside className="hidden min-h-screen w-64 border-r bg-white md:block">
+    <aside className="relative hidden min-h-screen w-64 border-r bg-white md:flex md:flex-col">
       {/* Logo */}
-
       <div className="border-b p-6">
-        <Link
-          href="/"
-          className="text-2xl font-bold"
-        >
+        <Link href="/" className="text-2xl font-bold">
           RentNest
         </Link>
       </div>
 
       {/* User */}
-
       <div className="border-b px-6 py-4">
-        <p className="font-medium">
-          {user?.name}
-        </p>
+        <p className="font-medium">{user?.name}</p>
 
         <p className="text-sm text-muted-foreground">
           {user?.role}
@@ -136,8 +123,7 @@ export default function DashboardSidebar() {
       </div>
 
       {/* Navigation */}
-
-      <nav className="space-y-1 p-4">
+      <nav className="flex-1 space-y-1 p-4">
         {items.map((item) => {
           const Icon = item.icon;
 
@@ -156,7 +142,6 @@ export default function DashboardSidebar() {
               }`}
             >
               <Icon className="h-4 w-4" />
-
               {item.title}
             </Link>
           );
@@ -164,15 +149,8 @@ export default function DashboardSidebar() {
       </nav>
 
       {/* Logout */}
-
-      <div className="absolute bottom-4 w-64 px-4">
-        <Button
-          variant="outline"
-          className="w-full"
-        >
-          <LogOut />
-          Logout
-        </Button>
+      <div className="border-t p-4">
+       <LogoutButton/>
       </div>
     </aside>
   );

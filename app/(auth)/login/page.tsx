@@ -52,8 +52,7 @@ export default function LoginPage() {
   };
 
   return (
-    // এখানে Register-এর মতো UI বানাবে
-    // পরে আমরা এটাকে সুন্দর shadcn UI দিয়ে করব
+  
     <div className="flex min-h-screen items-center justify-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
