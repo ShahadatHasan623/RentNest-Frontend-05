@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { JwtPayload } from "jsonwebtoken";
 
 import { jwtUtils } from "./utils/jwt";
-import { getNewAccessToken } from "./src/services/refreshToken";
+import { getNewAccessToken } from "./services/refreshToken";
 
 const AUTH_ROUTES = ["/login", "/register"];
 
@@ -185,17 +185,17 @@ function handleRoute(
     return redirectUserByRole(request, userRole);
   }
 
-  // ----------------------------------------
+
   // 12. Admin Route Protection
-  // ----------------------------------------
+  
 
   if (isAdminRoute && userRole !== "ADMIN") {
     return redirectUserByRole(request, userRole);
   }
 
-  // ----------------------------------------
+
   // 13. Continue
-  // ----------------------------------------
+
 
   return response;
 }
