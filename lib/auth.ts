@@ -7,6 +7,7 @@ export const getAccessToken = async () => {
   let accessToken = cookieStore.get("accessToken")?.value;
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
+  // No token
   if (!accessToken && !refreshToken) {
     return {
       success: false,
@@ -14,30 +15,30 @@ export const getAccessToken = async () => {
     };
   }
 
-  const accessSecret = process.env.JWT_ACCESS_SECRET as string;
-  const refreshSecret = process.env.JWT_REFRESH_SECRET as string;
-
-  let accessValid = false;
-
+  // Check access token
   if (accessToken) {
     try {
-      jwt.verify(accessToken, accessSecret);
-      accessValid = true;
+      jwt.verify(
+        accessToken,
+        process.env.JWT_ACCESS_SECRET as string
+      );
+
+      return {
+        success: true,
+        accessToken,
+      };
     } catch {
-      accessValid = false;
+      // Access token expired/invalid
     }
   }
 
-  if (accessValid) {
-    return {
-      success: true,
-      accessToken,
-    };
-  }
-
+  // Check refresh token
   if (refreshToken) {
     try {
-      jwt.verify(refreshToken, refreshSecret);
+      jwt.verify(
+        refreshToken,
+        process.env.JWT_REFRESH_SECRET as string
+      );
 
       const response = await fetch(
         `${process.env.BACKEND_API_URL}/api/auth/refresh-token`,
@@ -53,33 +54,29 @@ export const getAccessToken = async () => {
       const result = await response.json();
 
       if (result.success && typeof result.data?.accessToken === "string") {
-        const refreshedAccessToken = result.data.accessToken;
+        const newAccessToken = result.data.accessToken;
+        accessToken = newAccessToken;
 
-        cookieStore.set("accessToken", refreshedAccessToken, {
+        cookieStore.set("accessToken", newAccessToken, {
           httpOnly: true,
-          maxAge: 60 * 60 * 24,
-          sameSite: "lax",
           secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 60 * 60 * 24,
           path: "/",
         });
 
-        accessToken = refreshedAccessToken;
-
         return {
           success: true,
-          accessToken,
+          accessToken: newAccessToken,
         };
       }
     } catch {
-      return {
-        success: false,
-        message: "Session expired!",
-      };
+      // Refresh token invalid
     }
   }
 
   return {
     success: false,
-    message: "Authentication failed!",
+    message: "Session expired. Please login again.",
   };
 };

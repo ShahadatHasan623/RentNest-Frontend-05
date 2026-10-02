@@ -16,7 +16,10 @@ export const authFetch = async (
 
   const headers = new Headers(options.headers);
 
-  headers.set("Cookie", `accessToken=${auth.accessToken}`);
+  headers.set(
+    "Cookie",
+    `accessToken=${auth.accessToken}`
+  );
 
   if (options.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");

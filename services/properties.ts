@@ -2,9 +2,15 @@ import { Property } from "@/types/property";
 
 export interface PropertyQuery {
   search?: string;
+
   location?: string;
+
+  propertyType?: string;
+
   minPrice?: number;
+
   maxPrice?: number;
+
   amenities?: string[];
 }
 
@@ -21,22 +27,37 @@ export const getProperties = async (
     searchParams.set("location", params.location);
   }
 
- 
+  if (params?.propertyType) {
+    searchParams.set(
+      "propertyType",
+      params.propertyType
+    );
+  }
+
   if (params?.minPrice !== undefined) {
-    searchParams.set("minPrice", String(params.minPrice));
+    searchParams.set(
+      "minPrice",
+      String(params.minPrice)
+    );
   }
 
   if (params?.maxPrice !== undefined) {
-    searchParams.set("maxPrice", String(params.maxPrice));
+    searchParams.set(
+      "maxPrice",
+      String(params.maxPrice)
+    );
   }
 
   if (params?.amenities?.length) {
-    searchParams.set("amenities", params.amenities.join(","));
+    searchParams.set(
+      "amenities",
+      params.amenities.join(",")
+    );
   }
 
   const query = searchParams.toString();
 
-  const res = await fetch(
+  const response = await fetch(
     `${process.env.BACKEND_API_URL}/api/properties${
       query ? `?${query}` : ""
     }`,
@@ -48,11 +69,13 @@ export const getProperties = async (
     }
   );
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch properties");
+  if (!response.ok) {
+    throw new Error(
+      "Failed to fetch properties"
+    );
   }
 
-  const result = await res.json();
+  const result = await response.json();
 
   return result.data || [];
 };
