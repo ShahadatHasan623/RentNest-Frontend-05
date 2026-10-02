@@ -1,32 +1,38 @@
 import axiosInstance from "../lib/axios";
 import { Property } from "../types/property";
 
-
 export interface CreatePropertyPayload {
   title: string;
-  description: string;
-  location: string;
-  price: number;
-  propertyType: string;
+  description?: string;
+  location?: string;
+  address?: string;
+  city?: string;
+  area?: string;
+  rent: number;
   bedrooms?: number;
   bathrooms?: number;
-  amenities?: string[];
-  images: string[];
-  isAvailable: boolean;
+  size: number;
+  amenities: string[];
+  images?: string[];
+  categoryId: string;
+  available: boolean;
 }
 
-export type UpdatePropertyPayload = Partial<CreatePropertyPayload>;
+export type UpdatePropertyPayload =
+  Partial<CreatePropertyPayload>;
 
 export const getMyProperties = async (): Promise<Property[]> => {
-  const { data } = await axiosInstance.get("/landlord/properties");
+  const { data } = await axiosInstance.get("/properties");
 
-  return data?.data?.result ?? data?.data ?? data;
+  return data?.data?.data ?? data?.data ?? data;
 };
 
 export const getMyPropertyById = async (
   id: string
 ): Promise<Property> => {
-  const { data } = await axiosInstance.get(`/landlord/properties/${id}`);
+  const { data } = await axiosInstance.get(
+    `/properties/${id}`
+  );
 
   return data?.data ?? data;
 };
@@ -35,7 +41,7 @@ export const createProperty = async (
   payload: CreatePropertyPayload
 ) => {
   const { data } = await axiosInstance.post(
-    "/landlord/properties",
+    "/properties",
     payload
   );
 
@@ -47,7 +53,7 @@ export const updateProperty = async (
   payload: UpdatePropertyPayload
 ) => {
   const { data } = await axiosInstance.patch(
-    `/landlord/properties/${id}`,
+    `/properties/${id}`,
     payload
   );
 
@@ -56,7 +62,7 @@ export const updateProperty = async (
 
 export const deleteProperty = async (id: string) => {
   const { data } = await axiosInstance.delete(
-    `/landlord/properties/${id}`
+    `/properties/${id}`
   );
 
   return data;
@@ -64,12 +70,12 @@ export const deleteProperty = async (id: string) => {
 
 export const togglePropertyAvailability = async (
   id: string,
-  isAvailable: boolean
+  available: boolean
 ) => {
   const { data } = await axiosInstance.patch(
-    `/landlord/properties/${id}`,
+    `/properties/${id}`,
     {
-      isAvailable,
+      available,
     }
   );
 

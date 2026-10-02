@@ -139,6 +139,7 @@ const MyPropertiesPage = () => {
                     "/placeholder-property.jpg"
                   }
                   alt={property.title}
+                  unoptimized
                   fill
                   className="object-cover"
                 />

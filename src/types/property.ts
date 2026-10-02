@@ -1,26 +1,35 @@
-export type PropertyType =
-  | "APARTMENT"
-  | "HOUSE"
-  | "ROOM"
-  | "OFFICE"
-  | "SHOP";
+export interface PropertyCategory {
+  id: string;
+  name: string;
+}
 
 export interface Property {
   id: string;
+
   title: string;
-  description: string;
-  location: string;
-  price: number;
-  propertyType: PropertyType;
+  description?: string;
+
+  location?: string;
+  address?: string;
+  city?: string;
+  area?: string;
+
+  rent: number;
+
+  categoryId: string;
+
+  category?: PropertyCategory;
 
   bedrooms?: number;
   bathrooms?: number;
 
-  amenities?: string[];
+  size: number;
 
-  images: string[];
+  amenities: string[];
 
-  isAvailable: boolean;
+  images?: string[];
+
+  available: boolean;
 
   landlord?: {
     id: string;
