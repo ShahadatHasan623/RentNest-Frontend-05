@@ -60,7 +60,7 @@ export const getMe = async (): Promise<AuthUser | null> => {
 
   try {
     const response = await fetch(
-      `${API_URL}/api/users/me`,
+      `${API_URL}/api/auth/me`,
       {
         headers: {
           Cookie: `accessToken=${accessToken}`,
