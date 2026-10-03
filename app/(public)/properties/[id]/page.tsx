@@ -5,6 +5,7 @@ import { getPropertyById } from "@/services/properties";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import RentalRequestForm from "@/_components/tenant/RentalRequestForm";
+import PropertyReviews from "@/_components/properties/PropertyReviews";
 
 interface PropertyDetailsPageProps {
   params: Promise<{
@@ -142,6 +143,7 @@ const PropertyDetailsPage = async ({
                 propertyId={property.id}
               />
             )}
+             <PropertyReviews propertyId={property.id} />
           </CardContent>
         </Card>
       </div>

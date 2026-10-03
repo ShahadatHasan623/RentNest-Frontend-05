@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import {
   Card,
   CardContent,
@@ -5,58 +7,121 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const AdminDashboard = () => {
-  return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">
-          Admin Dashboard
-        </h2>
+import { Button } from "@/components/ui/button";
 
-        <p className="text-muted-foreground">
-          Manage users, properties and platform moderation.
+const AdminDashboardPage = () => {
+  const stats = [
+    {
+      title: "Total Users",
+      value: 0,
+    },
+    {
+      title: "Tenants",
+      value: 0,
+    },
+    {
+      title: "Landlords",
+      value: 0,
+    },
+    {
+      title: "Pending Properties",
+      value: 0,
+    },
+  ];
+
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <div>
+        <h1 className="text-3xl font-bold">
+          Admin Dashboard
+        </h1>
+
+        <p className="mt-1 text-muted-foreground">
+          Manage users, properties and platform activity.
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      {/* Stats */}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {stats.map((stat) => (
+          <Card key={stat.title}>
+            <CardHeader>
+              <CardTitle className="text-sm text-muted-foreground">
+                {stat.title}
+              </CardTitle>
+            </CardHeader>
+
+            <CardContent>
+              <p className="text-3xl font-bold">
+                {stat.value}
+              </p>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Management */}
+      <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Total Users</CardTitle>
+            <CardTitle>User Management</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">0</p>
+
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              View users and manage their account status.
+            </p>
+
+            <Button asChild>
+              <Link href="/dashboard/admin/users">
+                Manage Users
+              </Link>
+            </Button>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>Properties</CardTitle>
+            <CardTitle>Property Moderation</CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">0</p>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Requests</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">0</p>
-          </CardContent>
-        </Card>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Review and manage properties submitted by landlords.
+            </p>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Moderation</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-3xl font-bold">0</p>
+            <Button asChild>
+              <Link href="/dashboard/admin/properties">
+                Manage Properties
+              </Link>
+            </Button>
           </CardContent>
         </Card>
       </div>
+
+      {/* Quick Actions */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Actions</CardTitle>
+        </CardHeader>
+
+        <CardContent className="flex flex-wrap gap-3">
+          <Button asChild>
+            <Link href="/dashboard/admin/users">
+              Users
+            </Link>
+          </Button>
+
+          <Button asChild variant="outline">
+            <Link href="/dashboard/admin/properties">
+              Properties
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default AdminDashboard;
+export default AdminDashboardPage;
