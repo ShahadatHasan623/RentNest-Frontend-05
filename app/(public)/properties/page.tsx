@@ -1,67 +1,65 @@
+import PropertyFilters from "@/_components/public/PropertyFilters";
+import PropertyGrid from "@/_components/public/PropertyGrid";
 import { getProperties } from "@/services/properties";
-import Image from "next/image";
 
-const HomePage = async () => {
-  const properties = await getProperties();
 
-  const featuredProperties =
-    properties.slice(0, 6);
+interface PropertiesPageProps {
+  searchParams: Promise<{
+    search?: string;
+    location?: string;
+    propertyType?: string;
+    minPrice?: string;
+    maxPrice?: string;
+  }>;
+}
+
+const PropertiesPage = async ({
+  searchParams,
+}: PropertiesPageProps) => {
+
+  const params = await searchParams;
+
+  const properties = await getProperties({
+    search: params.search,
+    location: params.location,
+    propertyType: params.propertyType,
+
+    minPrice: params.minPrice
+      ? Number(params.minPrice)
+      : undefined,
+
+    maxPrice: params.maxPrice
+      ? Number(params.maxPrice)
+      : undefined,
+  });
 
   return (
     <main className="container mx-auto px-4 py-10">
 
-      <section className="mb-12">
-        <h1 className="text-4xl font-bold">
-          Find Your Perfect Rental Home
+      {/* Header */}
+      <div className="mb-10">
+
+        <p className="text-sm font-medium text-primary">
+          RENTNEST
+        </p>
+
+        <h1 className="mt-1 text-3xl font-bold md:text-4xl">
+          Browse Properties
         </h1>
 
-        <p className="mt-3 text-muted-foreground">
-          Discover comfortable and affordable
-          rental properties with RentNest.
+        <p className="mt-2 text-muted-foreground">
+          Find a rental property that matches your needs.
         </p>
-      </section>
 
-      <section>
-        <h2 className="mb-6 text-2xl font-semibold">
-          Featured Properties
-        </h2>
-
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-
-          {featuredProperties.map(
-            (property) => (
-              <div
-                key={property.id}
-                className="rounded-xl border p-5"
-              >
-                <Image
-                unoptimized
-                  src={property.images[0]}
-                  alt={property.title}
-                  width={400}
-                  height={300}
-                  className="w-full h-auto rounded-lg"
-                />
-                <h3 className="text-xl font-semibold">
-                  {property.title}
-                </h3>
-                
-                <p className="mt-2">
-                  {property.location}
-                </p>
-
-                <p className="mt-2 font-bold">
-                  ${property.rent}/month
-                </p>
-              </div>
-            )
-          )}
-
-        </div>
-      </section>
+      </div>
+<PropertyFilters />
+      {/* Result */}
+      <PropertyGrid
+        properties={properties}
+      />
 
     </main>
   );
 };
 
-export default HomePage;
+export default PropertiesPage;
