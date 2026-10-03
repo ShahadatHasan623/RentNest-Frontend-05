@@ -1,40 +1,33 @@
-export type RentalStatus =
+export type RentalRequestStatus =
   | "PENDING"
   | "APPROVED"
   | "REJECTED"
   | "ACTIVE"
   | "COMPLETED";
 
-export interface Rental {
+export interface RentalRequest {
   id: string;
 
   propertyId: string;
-
   tenantId: string;
 
-  landlordId?: string;
+  status: RentalRequestStatus;
 
   message?: string;
 
-  moveInDate?: string;
-
-  status: RentalStatus;
+  createdAt: string;
 
   property?: {
     id: string;
     title: string;
-    location: string;
-    price: number;
-    images: string[];
+    location?: string;
+    rent?: number;
+    images?: string[];
   };
 
   tenant?: {
     id: string;
-    name: string;
-    email: string;
+    name?: string;
+    email?: string;
   };
-
-  createdAt?: string;
-
-  updatedAt?: string;
 }
