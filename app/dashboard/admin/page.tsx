@@ -1,9 +1,15 @@
-import React from 'react'
-
-const page = () => {
+const AdminDashboard = () => {
   return (
-    <div>page</div>
-  )
-}
+    <div>
+      <h1 className="text-3xl font-bold">
+        Admin Dashboard
+      </h1>
 
-export default page
+      <p className="mt-2 text-muted-foreground">
+        Manage the RentNest platform.
+      </p>
+    </div>
+  );
+};
+
+export default AdminDashboard;
