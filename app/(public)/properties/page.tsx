@@ -52,7 +52,7 @@ const PropertiesPage = async ({
         </p>
 
       </div>
-<PropertyFilters />
+      <PropertyFilters />
       {/* Result */}
       <PropertyGrid
         properties={properties}

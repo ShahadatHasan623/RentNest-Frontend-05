@@ -1,3 +1,4 @@
+import { authFetch } from "@/lib/auth-fetch";
 import { Property } from "@/types/property";
 
 export interface PropertyQuery {
@@ -78,4 +79,23 @@ export const getProperties = async (
   const result = await response.json();
 
   return result.data || [];
+};
+
+export const getPropertyById = async (
+  id: string
+): Promise<Property | null> => {
+  try {
+    const result = await authFetch(`/api/properties/${id}`);
+
+    console.log("PROPERTY DETAILS:", result);
+
+    if (!result?.success) {
+      return null;
+    }
+
+    return result.data ?? null;
+  } catch (error) {
+    console.error("GET PROPERTY ERROR:", error);
+    return null;
+  }
 };

@@ -1,12 +1,11 @@
-
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-import { createPropertyAction } from "@/app/dashboard/landlord/properties/_actions/createProperty";
-
+import { updatePropertyAction } from "@/app/dashboard/landlord/properties/_actions/propertyActions";
+import { getCategoriesAction } from "@/app/dashboard/landlord/properties/_actions/getCategories";
 
 import {
   Card,
@@ -18,15 +17,23 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { getCategoriesAction } from "@/app/dashboard/landlord/properties/_actions/getCategories";
+
+import type { Property } from "@/types/property";
 
 interface Category {
   id: string;
   name: string;
 }
 
-const PropertyForm = () => {
+interface EditPropertyFormProps {
+  property: Property;
+}
+
+const EditPropertyForm = ({
+  property,
+}: EditPropertyFormProps) => {
   const router = useRouter();
+
   const [isPending, startTransition] = useTransition();
 
   const [categories, setCategories] = useState<Category[]>([]);
@@ -34,30 +41,37 @@ const PropertyForm = () => {
     useState(true);
 
   const [form, setForm] = useState({
-    title: "",
-    description: "",
-    location: "",
-    address: "",
-    city: "",
-    area: "",
-    rent: "",
-    bedrooms: "",
-    bathrooms: "",
-    size: "",
-    categoryId: "",
-    amenities: "",
-    images: "",
-    available: true,
+    title: property.title || "",
+    description: property.description || "",
+    location: property.location || "",
+    address: property.address || "",
+    city: property.city || "",
+    area: property.area || "",
+    rent: property.rent?.toString() || "",
+    bedrooms: property.bedrooms?.toString() || "",
+    bathrooms: property.bathrooms?.toString() || "",
+    size: property.size?.toString() || "",
+    categoryId: property.categoryId || "",
+    amenities: property.amenities?.join(", ") || "",
+    images: property.images?.join("\n") || "",
+    available: property.available,
   });
 
   useEffect(() => {
     const loadCategories = async () => {
       try {
         const data = await getCategoriesAction();
+
         setCategories(data);
       } catch (error) {
-        console.error("CATEGORY LOAD ERROR:", error);
-        toast.error("Failed to load categories");
+        console.error(
+          "CATEGORY LOAD ERROR:",
+          error
+        );
+
+        toast.error(
+          "Failed to load categories"
+        );
       } finally {
         setLoadingCategories(false);
       }
@@ -68,7 +82,9 @@ const PropertyForm = () => {
 
   const handleChange = (
     e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+      HTMLInputElement |
+        HTMLTextAreaElement |
+        HTMLSelectElement
     >
   ) => {
     const { name, value } = e.target;
@@ -118,20 +134,34 @@ const PropertyForm = () => {
         available: form.available,
       };
 
-      console.log("CREATE PROPERTY PAYLOAD:", payload);
+      console.log(
+        "UPDATE PROPERTY PAYLOAD:",
+        payload
+      );
 
-      const result = await createPropertyAction(payload);
+      const result =
+        await updatePropertyAction(
+          property.id,
+          payload
+        );
 
       if (!result?.success) {
         toast.error(
-          result?.message || "Failed to create property"
+          result?.message ||
+            "Failed to update property"
         );
+
         return;
       }
 
-      toast.success("Property created successfully");
+      toast.success(
+        "Property updated successfully"
+      );
 
-      router.push("/dashboard/landlord/properties");
+      router.push(
+        "/dashboard/landlord/properties"
+      );
+
       router.refresh();
     });
   };
@@ -139,7 +169,9 @@ const PropertyForm = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Property Information</CardTitle>
+        <CardTitle>
+          Edit Property Information
+        </CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -148,6 +180,7 @@ const PropertyForm = () => {
           className="space-y-6"
         >
           <div className="grid gap-4 md:grid-cols-2">
+            {/* Title */}
             <Input
               name="title"
               placeholder="Property title"
@@ -171,16 +204,19 @@ const PropertyForm = () => {
                   : "Select Category"}
               </option>
 
-              {categories.map((category) => (
-                <option
-                  key={category.id}
-                  value={category.id}
-                >
-                  {category.name}
-                </option>
-              ))}
+              {categories.map(
+                (category) => (
+                  <option
+                    key={category.id}
+                    value={category.id}
+                  >
+                    {category.name}
+                  </option>
+                )
+              )}
             </select>
 
+            {/* Location */}
             <Input
               name="location"
               placeholder="Location"
@@ -188,6 +224,7 @@ const PropertyForm = () => {
               onChange={handleChange}
             />
 
+            {/* Address */}
             <Input
               name="address"
               placeholder="Full address"
@@ -195,6 +232,7 @@ const PropertyForm = () => {
               onChange={handleChange}
             />
 
+            {/* City */}
             <Input
               name="city"
               placeholder="City"
@@ -202,6 +240,7 @@ const PropertyForm = () => {
               onChange={handleChange}
             />
 
+            {/* Area */}
             <Input
               name="area"
               placeholder="Area"
@@ -209,6 +248,7 @@ const PropertyForm = () => {
               onChange={handleChange}
             />
 
+            {/* Rent */}
             <Input
               name="rent"
               type="number"
@@ -218,6 +258,7 @@ const PropertyForm = () => {
               required
             />
 
+            {/* Size */}
             <Input
               name="size"
               type="number"
@@ -227,6 +268,7 @@ const PropertyForm = () => {
               required
             />
 
+            {/* Bedrooms */}
             <Input
               name="bedrooms"
               type="number"
@@ -235,6 +277,7 @@ const PropertyForm = () => {
               onChange={handleChange}
             />
 
+            {/* Bathrooms */}
             <Input
               name="bathrooms"
               type="number"
@@ -244,6 +287,7 @@ const PropertyForm = () => {
             />
           </div>
 
+          {/* Description */}
           <Textarea
             name="description"
             placeholder="Property description"
@@ -252,6 +296,7 @@ const PropertyForm = () => {
             rows={5}
           />
 
+          {/* Amenities */}
           <Input
             name="amenities"
             placeholder="Amenities: WiFi, Parking, Lift"
@@ -259,6 +304,7 @@ const PropertyForm = () => {
             onChange={handleChange}
           />
 
+          {/* Images */}
           <Textarea
             name="images"
             placeholder="Image URLs — one URL per line"
@@ -267,14 +313,38 @@ const PropertyForm = () => {
             rows={4}
           />
 
+          {/* Availability */}
+          <div className="flex items-center gap-3">
+            <input
+              type="checkbox"
+              checked={form.available}
+              onChange={(e) =>
+                setForm((prev) => ({
+                  ...prev,
+                  available:
+                    e.target.checked,
+                }))
+              }
+              className="h-4 w-4"
+            />
+
+            <span className="text-sm">
+              Property is available
+            </span>
+          </div>
+
+          {/* Submit */}
           <Button
             type="submit"
-            disabled={isPending || loadingCategories}
+            disabled={
+              isPending ||
+              loadingCategories
+            }
             className="w-full"
           >
             {isPending
-              ? "Creating..."
-              : "Create Property"}
+              ? "Updating..."
+              : "Update Property"}
           </Button>
         </form>
       </CardContent>
@@ -282,6 +352,4 @@ const PropertyForm = () => {
   );
 };
 
-export default PropertyForm;
-
-
+export default EditPropertyForm;

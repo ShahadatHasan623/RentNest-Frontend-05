@@ -38,3 +38,80 @@ export const createProperty = async (
     };
   }
 };
+
+export const updateProperty = async (
+  id: string,
+  payload: Partial<CreatePropertyPayload>
+) => {
+  try {
+    return await authFetch(
+      `/api/properties/${id}`,
+      {
+        method: "PUT",
+        body: JSON.stringify(payload),
+      }
+    );
+  } catch (error) {
+    console.error(
+      "UPDATE PROPERTY ERROR:",
+      error
+    );
+
+    return {
+      success: false,
+      message: "Failed to update property",
+    };
+  }
+};
+
+export const deleteProperty = async (
+  id: string
+) => {
+  try {
+    return await authFetch(
+      `/api/properties/${id}`,
+      {
+        method: "DELETE",
+      }
+    );
+  } catch (error) {
+    console.error(
+      "DELETE PROPERTY ERROR:",
+      error
+    );
+
+    return {
+      success: false,
+      message: "Failed to delete property",
+    };
+  }
+};
+
+export const togglePropertyAvailability =
+  async (
+    id: string,
+    available: boolean
+  ) => {
+    try {
+      return await authFetch(
+        `/api/properties/${id}`,
+        {
+          method: "PUT",
+          body: JSON.stringify({
+            available,
+          }),
+        }
+      );
+    } catch (error) {
+      console.error(
+        "TOGGLE AVAILABILITY ERROR:",
+        error
+      );
+
+      return {
+        success: false,
+        message:
+          "Failed to update availability",
+      };
+    }
+  };

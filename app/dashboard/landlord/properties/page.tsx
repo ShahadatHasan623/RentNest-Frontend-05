@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
 import { getMyProperties } from "@/services/landlordProperties";
+import PropertyActions from "@/_components/landlord/PropertyActions";
+
 
 const MyPropertiesPage = async () => {
   const properties = await getMyProperties();
@@ -65,7 +67,7 @@ const MyPropertiesPage = async () => {
               {/* Image */}
               <div className="relative h-52 w-full">
                 <Image
-                unoptimized
+                  unoptimized
                   src={
                     property.images?.[0] ||
                     "/placeholder-property.jpg"
@@ -123,13 +125,10 @@ const MyPropertiesPage = async () => {
                     </span>
                   </p>
 
-                  <Button variant="outline" asChild>
-                    <Link
-                      href={`/dashboard/landlord/properties/${property.id}`}
-                    >
-                      Manage
-                    </Link>
-                  </Button>
+                  <PropertyActions
+                    id={property.id}
+                    available={property.available}
+                  />
                 </div>
               </CardContent>
             </Card>
