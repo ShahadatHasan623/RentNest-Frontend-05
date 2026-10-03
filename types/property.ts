@@ -1,26 +1,39 @@
 export interface Property {
   id: string;
   title: string;
-  description: string;
-  location: string;
+  description?: string;
+  location?: string;
+  address?: string;
   city?: string;
   area?: string;
-  rent: number;
+  rent?: number;
   bedrooms?: number;
   bathrooms?: number;
+  size: number;
   amenities: string[];
   images: string[];
   available: boolean;
-  landlord?: {
+  landlordId: string;
+  categoryId: string;
+  category?: {
     id: string;
     name: string;
-    email: string;
-    image?: string;
-    activeStatus?: boolean;
-    role?: string;
-    createdAt?: string;
-    updatedAt?: string;
   };
-  createdAt?: string;
-  updatedAt?: string;
+}
+
+export interface CreatePropertyPayload {
+  title: string;
+  description?: string;
+  location?: string;
+  address?: string;
+  city?: string;
+  area?: string;
+  rent?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  size: number;
+  amenities: string[];
+  images: string[];
+  available: boolean;
+  categoryId: string;
 }
