@@ -1,4 +1,5 @@
 import { authFetch } from "@/lib/auth-fetch";
+import axiosInstance from "@/lib/axios";
 import { Property } from "@/types/property";
 
 export interface PropertyQuery {
@@ -97,5 +98,21 @@ export const getPropertyById = async (
   } catch (error) {
     console.error("GET PROPERTY ERROR:", error);
     return null;
+  }
+};
+
+export const getAllProperties = async (): Promise<Property[]> => {
+  try {
+    const { data } = await axiosInstance.get("/api/properties");
+
+
+    if (!data?.success) {
+      return [];
+    }
+
+    return Array.isArray(data.data) ? data.data : [];
+  } catch (error) {
+    console.error("GET ALL PROPERTIES ERROR:", error);
+    return [];
   }
 };
