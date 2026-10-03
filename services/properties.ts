@@ -30,39 +30,25 @@ export const getProperties = async (
   }
 
   if (params?.propertyType) {
-    searchParams.set(
-      "propertyType",
-      params.propertyType
-    );
+    searchParams.set("propertyType", params.propertyType);
   }
 
   if (params?.minPrice !== undefined) {
-    searchParams.set(
-      "minPrice",
-      String(params.minPrice)
-    );
+    searchParams.set("minPrice", String(params.minPrice));
   }
 
   if (params?.maxPrice !== undefined) {
-    searchParams.set(
-      "maxPrice",
-      String(params.maxPrice)
-    );
+    searchParams.set("maxPrice", String(params.maxPrice));
   }
 
   if (params?.amenities?.length) {
-    searchParams.set(
-      "amenities",
-      params.amenities.join(",")
-    );
+    searchParams.set("amenities", params.amenities.join(","));
   }
 
   const query = searchParams.toString();
 
   const response = await fetch(
-    `${process.env.BACKEND_API_URL}/api/properties${
-      query ? `?${query}` : ""
-    }`,
+    `${process.env.BACKEND_API_URL}/api/properties${query ? `?${query}` : ""}`,
     {
       next: {
         revalidate: 60,
@@ -72,9 +58,7 @@ export const getProperties = async (
   );
 
   if (!response.ok) {
-    throw new Error(
-      "Failed to fetch properties"
-    );
+    throw new Error("Failed to fetch properties");
   }
 
   const result = await response.json();
@@ -82,21 +66,19 @@ export const getProperties = async (
   return result.data || [];
 };
 
-export const getPropertyById = async (
-  id: string
-): Promise<Property | null> => {
+export const getPropertyById = async (id: string) => {
   try {
+    if (!id) {
+      console.error("GET PROPERTY: Property ID missing");
+      return null;
+    }
     const result = await authFetch(`/api/properties/${id}`);
-
-    console.log("PROPERTY DETAILS:", result);
-
     if (!result?.success) {
       return null;
     }
-
-    return result.data ?? null;
+    return result.data;
   } catch (error) {
-    console.error("GET PROPERTY ERROR:", error);
+    console.error("GET PROPERTY DETAILS ERROR:", error);
     return null;
   }
 };
@@ -104,7 +86,6 @@ export const getPropertyById = async (
 export const getAllProperties = async (): Promise<Property[]> => {
   try {
     const { data } = await axiosInstance.get("/api/properties");
-
 
     if (!data?.success) {
       return [];

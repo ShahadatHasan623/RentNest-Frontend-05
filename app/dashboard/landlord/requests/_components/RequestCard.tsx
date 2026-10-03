@@ -28,8 +28,7 @@ const RequestCard = ({
     status: "APPROVED" | "REJECTED"
   ) => {
     startTransition(async () => {
-      // API action আমরা backend route পাওয়ার পরে বসাবো
-
+   
       console.log(
         "UPDATE REQUEST:",
         request.id,

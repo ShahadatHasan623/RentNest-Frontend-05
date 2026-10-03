@@ -1,3 +1,5 @@
+import { Star } from "lucide-react";
+
 import { getPropertyReviews } from "@/services/reviews";
 
 interface PropertyReviewsProps {
@@ -7,28 +9,53 @@ interface PropertyReviewsProps {
 const PropertyReviews = async ({
   propertyId,
 }: PropertyReviewsProps) => {
-  const data = await getPropertyReviews(propertyId);
+  const data =
+    await getPropertyReviews(propertyId);
 
   return (
-    <section className="mt-10 space-y-6">
+    <section className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">
           Reviews
         </h2>
 
-        <div className="mt-2 flex items-center gap-3">
-          <span className="text-xl font-semibold">
-            ⭐ {data.averageRating.toFixed(1)}
-          </span>
+        <p className="text-sm text-muted-foreground">
+          {data.totalReviews} review
+          {data.totalReviews !== 1 ? "s" : ""}
+        </p>
+      </div>
 
-          <span className="text-sm text-muted-foreground">
-            ({data.totalReviews} reviews)
-          </span>
+      {/* Rating Summary */}
+      <div className="flex items-center gap-4 rounded-xl border p-5">
+        <div>
+          <p className="text-4xl font-bold">
+            {data.averageRating.toFixed(1)}
+          </p>
+        </div>
+
+        <div>
+          <div className="flex">
+            {[1, 2, 3, 4, 5].map((star) => (
+              <Star
+                key={star}
+                className={`h-5 w-5 ${star <=
+                    Math.round(data.averageRating)
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "text-muted-foreground"
+                  }`}
+              />
+            ))}
+          </div>
+
+          <p className="text-sm text-muted-foreground">
+            Average rating
+          </p>
         </div>
       </div>
 
+      {/* Reviews */}
       {data.reviews.length === 0 ? (
-        <div className="rounded-xl border p-6 text-center">
+        <div className="rounded-xl border p-8 text-center">
           <p className="text-muted-foreground">
             No reviews yet.
           </p>
@@ -42,26 +69,34 @@ const PropertyReviews = async ({
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="font-semibold">
-                    {review.tenant?.name || "Anonymous"}
-                  </h3>
-
-                  <p className="text-sm text-muted-foreground">
-                    {new Date(
-                      review.createdAt
-                    ).toLocaleDateString()}
+                  <p className="font-semibold">
+                    {review.tenant?.name ||
+                      "Anonymous"}
                   </p>
+
+                  <div className="mt-1 flex">
+                    {[1, 2, 3, 4, 5].map(
+                      (star) => (
+                        <Star
+                          key={star}
+                          className={`h-4 w-4 ${star <= review.rating
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-muted-foreground"
+                            }`}
+                        />
+                      )
+                    )}
+                  </div>
                 </div>
 
-                <div className="text-yellow-400">
-                  {"★".repeat(review.rating)}
-                  <span className="text-gray-300">
-                    {"★".repeat(5 - review.rating)}
-                  </span>
-                </div>
+                <span className="text-xs text-muted-foreground">
+                  {new Date(
+                    review.createdAt
+                  ).toLocaleDateString()}
+                </span>
               </div>
 
-              <p className="mt-4 text-sm leading-6">
+              <p className="mt-4 text-sm leading-6 text-muted-foreground">
                 {review.comment}
               </p>
             </div>

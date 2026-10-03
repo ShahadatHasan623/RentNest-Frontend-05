@@ -1,4 +1,3 @@
-import PropertyActions from "@/_components/landlord/PropertyActions";
 import PropertyFilters from "@/_components/public/PropertyFilters";
 import PropertyGrid from "@/_components/public/PropertyGrid";
 import { getProperties } from "@/services/properties";
@@ -53,12 +52,12 @@ const PropertiesPage = async ({
         </p>
 
       </div>
-      <PropertyFilters />
+     <PropertyFilters />
       {/* Result */}
       <PropertyGrid
         properties={properties}
       />
-      
+
     </main>
   );
 };

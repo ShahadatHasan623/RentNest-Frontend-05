@@ -1,121 +1,181 @@
+
 "use client";
 
-import { useState, useTransition } from "react";
+import {
+  useState,
+  useTransition,
+} from "react";
+
+import { useRouter } from "next/navigation";
+
 import { toast } from "sonner";
+
+import { Star } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-import { createReviewAction } from "@/app/dashboard/tenant/_actions/reviewActions";
+import { createReviewAction } from "@/app/dashboard/tenant/reviews/_actions/reviewActions";
 
 interface ReviewFormProps {
   propertyId: string;
-  onSuccess?: () => void;
 }
 
 const ReviewForm = ({
   propertyId,
-  onSuccess,
 }: ReviewFormProps) => {
+  const router = useRouter();
+
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
 
-  const [isPending, startTransition] = useTransition();
+  const [isPending, startTransition] =
+    useTransition();
 
-  const handleSubmit = () => {
-    if (!rating) {
-      toast.error("Please select a rating");
+  const handleSubmit = (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
+    e.preventDefault();
+
+    if (!propertyId) {
+      toast.error("Property ID is missing");
+      return;
+    }
+
+    if (rating < 1 || rating > 5) {
+      toast.error(
+        "Please select a rating"
+      );
       return;
     }
 
     if (!comment.trim()) {
-      toast.error("Please write a comment");
+      toast.error(
+        "Please write a comment"
+      );
       return;
     }
 
     startTransition(async () => {
-      const result = await createReviewAction({
-        propertyId,
-        rating,
-        comment,
-      });
+      const result =
+        await createReviewAction({
+          propertyId,
+          rating,
+          comment: comment.trim(),
+        });
+
+      console.log(
+        "REVIEW RESULT:",
+        result
+      );
 
       if (!result?.success) {
         toast.error(
-          result?.message || "Failed to create review"
+          result?.message ||
+            "Failed to submit review"
         );
+
         return;
       }
 
-      toast.success("Review submitted successfully!");
+      toast.success(
+        "Review submitted successfully"
+      );
 
       setRating(0);
       setComment("");
 
-      onSuccess?.();
+      router.refresh();
     });
   };
 
   return (
-    <div className="space-y-5 rounded-xl border p-5">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 rounded-xl border bg-card p-6"
+    >
       <div>
-        <h3 className="text-lg font-semibold">
-          Write a Review
-        </h3>
-        <p className="text-sm text-muted-foreground">
+        <h2 className="text-xl font-semibold">
+          Leave a Review
+        </h2>
+
+        <p className="mt-1 text-sm text-muted-foreground">
           Share your experience with this property.
         </p>
       </div>
 
       {/* Rating */}
-      <div className="space-y-2">
-        <p className="text-sm font-medium">Rating</p>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium">
+          Your Rating
+        </p>
 
         <div className="flex gap-2">
-          {[1, 2, 3, 4, 5].map((star) => (
-            <button
-              key={star}
-              type="button"
-              onClick={() => setRating(star)}
-              className="text-3xl transition-transform hover:scale-110"
-              aria-label={`Rate ${star} star`}
-            >
-              <span
-                className={
-                  star <= rating
-                    ? "text-yellow-400"
-                    : "text-gray-300"
+          {[1, 2, 3, 4, 5].map(
+            (star) => (
+              <button
+                key={star}
+                type="button"
+                onClick={() =>
+                  setRating(star)
                 }
+                disabled={isPending}
+                aria-label={`Rate ${star} stars`}
+                className="rounded-md p-1 transition hover:scale-110 disabled:opacity-50"
               >
-                ★
-              </span>
-            </button>
-          ))}
+                <Star
+                  className={`h-7 w-7 ${
+                    star <= rating
+                      ? "fill-yellow-400 text-yellow-400"
+                      : "text-muted-foreground"
+                  }`}
+                />
+              </button>
+            )
+          )}
         </div>
+
+        <p className="text-sm text-muted-foreground">
+          {rating > 0
+            ? `${rating} out of 5 stars`
+            : "Select your rating"}
+        </p>
       </div>
 
       {/* Comment */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Comment
+
+      <div className="space-y-3">
+        <label
+          htmlFor="review-comment"
+          className="text-sm font-medium"
+        >
+          Your Comment
         </label>
 
         <Textarea
+          id="review-comment"
           placeholder="Write your experience..."
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
+          onChange={(e) =>
+            setComment(e.target.value)
+          }
           rows={5}
+          disabled={isPending}
         />
       </div>
 
       <Button
-        onClick={handleSubmit}
+        type="submit"
         disabled={isPending}
       >
-        {isPending ? "Submitting..." : "Submit Review"}
+        {isPending
+          ? "Submitting..."
+          : "Submit Review"}
       </Button>
-    </div>
+    </form>
   );
 };
 
 export default ReviewForm;
+

@@ -12,6 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { getMe } from "@/services/auth";
 import DashboardSidebar from "./components/dashboard/DashboardSidebar";
 import DashboardHeader from "./components/dashboard/DashboardHeader";
+import Navbar from "@/_components/public/Navbar";
 
 const DashboardLayout = async ({
   children,
@@ -39,7 +40,6 @@ const DashboardLayout = async ({
           <DashboardHeader
             title={`${user.role.charAt(0)}${user.role.slice(1).toLowerCase()} Dashboard`}
           />
-
           <main className="flex-1 p-4 md:p-6">
             {children}
           </main>

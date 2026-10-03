@@ -1,8 +1,16 @@
+import HeroSection from "@/_components/public/HeroSection";
 
 
-export default function Home() {
+
+const HomePage = async () => {
+
+
   return (
-    <>
-    </>
+    <div>
+      {/* Hero Section */}
+      <HeroSection></HeroSection>
+    </div>
   );
-}
+};
+
+export default HomePage;

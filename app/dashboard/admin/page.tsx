@@ -1,33 +1,31 @@
-import Link from "next/link";
-
+import { getAllUsers } from "@/services/users";
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+  Users,
+  UserCheck,
+  UserX,
+  ShieldCheck,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+const AdminDashboardPage = async () => {
+  const users = await getAllUsers();
 
-const AdminDashboardPage = () => {
-  const stats = [
-    {
-      title: "Total Users",
-      value: 0,
-    },
-    {
-      title: "Tenants",
-      value: 0,
-    },
-    {
-      title: "Landlords",
-      value: 0,
-    },
-    {
-      title: "Pending Properties",
-      value: 0,
-    },
-  ];
+  const totalUsers = users.length;
+
+  const activeUsers = users.filter(
+    (user) => user.activeStatus === "ACTIVE"
+  ).length;
+
+  const blockedUsers = users.filter(
+    (user) => user.activeStatus === "BLOCKED"
+  ).length;
+
+  const landlords = users.filter(
+    (user) => user.role === "LANDLORD"
+  ).length;
+
+  const tenants = users.filter(
+    (user) => user.role === "TENANT"
+  ).length;
 
   return (
     <div className="space-y-8">
@@ -38,88 +36,150 @@ const AdminDashboardPage = () => {
         </h1>
 
         <p className="mt-1 text-muted-foreground">
-          Manage users, properties and platform activity.
+          Manage users and monitor the RentNest platform.
         </p>
       </div>
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader>
-              <CardTitle className="text-sm text-muted-foreground">
-                {stat.title}
-              </CardTitle>
-            </CardHeader>
+        <StatCard
+          title="Total Users"
+          value={totalUsers}
+          icon={<Users className="h-5 w-5" />}
+        />
 
-            <CardContent>
-              <p className="text-3xl font-bold">
-                {stat.value}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
+        <StatCard
+          title="Active Users"
+          value={activeUsers}
+          icon={<UserCheck className="h-5 w-5" />}
+        />
+
+        <StatCard
+          title="Blocked Users"
+          value={blockedUsers}
+          icon={<UserX className="h-5 w-5" />}
+        />
+
+        <StatCard
+          title="Landlords"
+          value={landlords}
+          icon={<ShieldCheck className="h-5 w-5" />}
+        />
       </div>
 
-      {/* Management */}
+      {/* User Overview */}
       <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle>User Management</CardTitle>
-          </CardHeader>
+        <div className="rounded-xl border p-6">
+          <h2 className="text-lg font-semibold">
+            User Overview
+          </h2>
 
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              View users and manage their account status.
-            </p>
+          <div className="mt-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                Tenants
+              </span>
 
-            <Button asChild>
-              <Link href="/dashboard/admin/users">
-                Manage Users
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+              <span className="font-semibold">
+                {tenants}
+              </span>
+            </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Property Moderation</CardTitle>
-          </CardHeader>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                Landlords
+              </span>
 
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Review and manage properties submitted by landlords.
-            </p>
+              <span className="font-semibold">
+                {landlords}
+              </span>
+            </div>
 
-            <Button asChild>
-              <Link href="/dashboard/admin/properties">
-                Manage Properties
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                Admins
+              </span>
+
+              <span className="font-semibold">
+                {users.filter(
+                  (user) => user.role === "ADMIN"
+                ).length}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-xl border p-6">
+          <h2 className="text-lg font-semibold">
+            Account Status
+          </h2>
+
+          <div className="mt-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                Active
+              </span>
+
+              <span className="font-semibold text-green-600">
+                {activeUsers}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                Blocked
+              </span>
+
+              <span className="font-semibold text-red-600">
+                {blockedUsers}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">
+                Inactive
+              </span>
+
+              <span className="font-semibold text-yellow-600">
+                {
+                  users.filter(
+                    (user) =>
+                      user.activeStatus === "INACTIVE"
+                  ).length
+                }
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const StatCard = ({
+  title,
+  value,
+  icon,
+}: {
+  title: string;
+  value: number;
+  icon: React.ReactNode;
+}) => {
+  return (
+    <div className="rounded-xl border p-5">
+      <div className="flex items-center justify-between">
+        <p className="text-sm text-muted-foreground">
+          {title}
+        </p>
+
+        <div className="rounded-lg bg-muted p-2">
+          {icon}
+        </div>
       </div>
 
-      {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Quick Actions</CardTitle>
-        </CardHeader>
-
-        <CardContent className="flex flex-wrap gap-3">
-          <Button asChild>
-            <Link href="/dashboard/admin/users">
-              Users
-            </Link>
-          </Button>
-
-          <Button asChild variant="outline">
-            <Link href="/dashboard/admin/properties">
-              Properties
-            </Link>
-          </Button>
-        </CardContent>
-      </Card>
+      <p className="mt-3 text-3xl font-bold">
+        {value}
+      </p>
     </div>
   );
 };

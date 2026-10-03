@@ -13,10 +13,12 @@ export interface Review {
   rating: number;
   comment: string;
   createdAt: string;
+
   tenant?: {
     id: string;
     name: string;
     email: string;
+    image?: string;
   };
 }
 
@@ -26,16 +28,28 @@ export interface PropertyReviews {
   reviews: Review[];
 }
 
-export const createReview = async (
-  payload: CreateReviewPayload
-) => {
+// My Reviews-এর জন্য
+export interface MyReview extends Review {
+  property?: {
+    id: string;
+    title: string;
+    description?: string;
+    location?: string;
+    address?: string;
+    rent?: number;
+    images?: string[];
+  };
+}
+
+// Create Review
+export const createReview = async (payload: CreateReviewPayload) => {
   try {
     const result = await authFetch("/api/reviews", {
       method: "POST",
       body: JSON.stringify(payload),
     });
 
-    console.log("CREATE REVIEW:", result);
+    console.log("CREATE REVIEW API RESULT:", result);
 
     return result;
   } catch (error) {
@@ -48,15 +62,22 @@ export const createReview = async (
   }
 };
 
+// Property Details → Customer Reviews
 export const getPropertyReviews = async (
   propertyId: string
 ): Promise<PropertyReviews> => {
   try {
-    const result = await authFetch(
-      `/api/reviews/property/${propertyId}`
-    );
+    if (!propertyId) {
+      return {
+        averageRating: 0,
+        totalReviews: 0,
+        reviews: [],
+      };
+    }
 
-    console.log("PROPERTY REVIEWS:", result);
+    const result = await authFetch(`/api/reviews/property/${propertyId}`);
+
+    console.log("PROPERTY REVIEWS RESULT:", result);
 
     if (!result?.success) {
       return {
@@ -81,5 +102,24 @@ export const getPropertyReviews = async (
       totalReviews: 0,
       reviews: [],
     };
+  }
+};
+
+// Tenant Dashboard → My Reviews
+export const getMyReviews = async (): Promise<MyReview[]> => {
+  try {
+    const result = await authFetch("/api/reviews/my-reviews");
+
+    console.log("MY REVIEWS RESULT:", result);
+
+    if (!result?.success) {
+      return [];
+    }
+
+    return result.data ?? [];
+  } catch (error) {
+    console.error("GET MY REVIEWS ERROR:", error);
+
+    return [];
   }
 };

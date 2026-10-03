@@ -4,8 +4,19 @@ import { notFound } from "next/navigation";
 import { getPropertyById } from "@/services/properties";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import RentalRequestForm from "@/_components/tenant/RentalRequestForm";
 import PropertyReviews from "@/_components/properties/PropertyReviews";
+
+interface PropertyDetails {
+  title: string;
+  location: string;
+  images?: string[];
+  rent?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  description?: string;
+  amenities?: string[];
+  available: boolean;
+}
 
 interface PropertyDetailsPageProps {
   params: Promise<{
@@ -15,16 +26,16 @@ interface PropertyDetailsPageProps {
 
 const PropertyDetailsPage = async ({
   params,
-}: PropertyDetailsPageProps) => {
-  const { id } = await params;
+}: PropertyDetailsPageProps): Promise<JSX.Element> => {
+  const { id }: { id: string } = await params;
 
-  const property = await getPropertyById(id);
+  const property: PropertyDetails | null = await getPropertyById(id);
 
   if (!property) {
     notFound();
   }
 
-  const mainImage =
+  const mainImage: string =
     property.images?.[0] ||
     "/placeholder-property.jpg";
 
@@ -32,7 +43,7 @@ const PropertyDetailsPage = async ({
     <div className="mx-auto max-w-6xl space-y-8 px-4 py-8">
       <div className="relative aspect-video overflow-hidden rounded-xl">
         <Image
-          unoptimized
+        unoptimized
           src={mainImage}
           alt={property.title}
           fill
@@ -139,11 +150,11 @@ const PropertyDetailsPage = async ({
             </p>
 
             {property.available && (
-              <RentalRequestForm
-                propertyId={property.id}
-              />
+              <Button className="w-full">
+                Request to Rent
+              </Button>
             )}
-             <PropertyReviews propertyId={property.id} />
+            <PropertyReviews propertyId={id} />
           </CardContent>
         </Card>
       </div>

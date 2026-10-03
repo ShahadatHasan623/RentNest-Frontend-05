@@ -1,17 +1,16 @@
-import Navbar from "@/_components/public/Navbar";
-
-const PublicLayout = ({
+import { Toaster } from "sonner";
+export default function PublicLayout({
   children,
 }: {
   children: React.ReactNode;
-}) => {
+}) {
   return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-
-      <main>{children}</main>
+    <div className="min-h-screen flex flex-col">
+    
+      <main className="flex-1">
+        {children}
+      </main>
+      <Toaster richColors position="bottom-right" />
     </div>
   );
-};
-
-export default PublicLayout;
+}

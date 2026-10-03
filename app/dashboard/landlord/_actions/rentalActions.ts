@@ -1,15 +1,17 @@
+
 "use server";
 
-import {
-  updateRentalStatus,
-} from "@/services/rentals";
+import { updateRentalStatus } from "@/services/rentals";
 
 export const updateRentalStatusAction = async (
   id: string,
-  status: string
+  status: "APPROVED" | "REJECTED" | "COMPLETED"
 ) => {
   try {
-    return await updateRentalStatus(id, status);
+    return await updateRentalStatus(
+      id,
+      status
+    );
   } catch (error) {
     console.error(
       "UPDATE RENTAL STATUS ACTION ERROR:",
@@ -18,7 +20,8 @@ export const updateRentalStatusAction = async (
 
     return {
       success: false,
-      message: "Failed to update rental status",
+      message:
+        "Failed to update rental status",
     };
   }
 };

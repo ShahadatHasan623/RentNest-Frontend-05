@@ -26,8 +26,6 @@ export const getMyPayments = async (): Promise<Payment[]> => {
   try {
     const result = await authFetch("/api/payments");
 
-    console.log("MY PAYMENTS:", result);
-
     if (!result?.success) return [];
 
     return Array.isArray(result.data) ? result.data : [];

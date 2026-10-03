@@ -47,7 +47,7 @@ const RentalRequestForm = ({
          return;
       }
 
-      console.log("PROPERTY ID:", propertyId);
+    
 
       startTransition(async () => {
          const result = await createRentalRequestAction(
@@ -55,6 +55,7 @@ const RentalRequestForm = ({
             moveInDate,
             Number(duration)
          );
+
 
          if (!result?.success) {
             toast.error(

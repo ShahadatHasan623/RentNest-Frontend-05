@@ -31,3 +31,12 @@ export interface RentalRequest {
     email?: string;
   };
 }
+
+export interface AdminRentalResponse {
+  data: RentalRequest[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+  };
+}

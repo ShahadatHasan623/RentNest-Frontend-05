@@ -27,7 +27,6 @@ const getStatusVariant = (status: string) => {
 
 const TenantRequestsPage = async () => {
   const rentals = await getMyRentals();
-
   return (
     <div className="space-y-6 p-6">
       <div>
@@ -142,6 +141,15 @@ const TenantRequestsPage = async () => {
                     </Button>
                   )}
                 </div>
+                {rental.payment?.status === "COMPLETED" &&  (
+                  <Button asChild>
+                    <Link
+                      href={`/dashboard/tenant/reviews/${rental.propertyId}`}
+                    >
+                      ⭐ Leave Review
+                    </Link>
+                  </Button>
+                )}
               </CardContent>
             </Card>
           ))}

@@ -8,13 +8,14 @@ export const createRentalRequestAction = async (
   duration: number
 ) => {
   try {
+    const payload = {
+      propertyId,
+      moveInDate,
+      duration,
+    };
     const result = await authFetch("/api/rentals", {
       method: "POST",
-      body: JSON.stringify({
-        propertyId,
-        moveInDate,
-        duration,
-      }),
+      body: JSON.stringify(payload),
     });
 
     return result;
