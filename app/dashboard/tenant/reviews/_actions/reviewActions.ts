@@ -9,14 +9,11 @@ export const createReviewAction = async (
   payload: CreateReviewPayload
 ) => {
   try {
-    console.log("SERVER ACTION REVIEW PAYLOAD:", payload);
+
 
     const result = await createReview(payload);
 
-    console.log(
-      "SERVER ACTION REVIEW RESULT:",
-      result
-    );
+   
 
     return result;
   } catch (error) {

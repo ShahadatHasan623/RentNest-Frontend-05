@@ -1,18 +1,12 @@
-import { authFetch } from "@/lib/auth-fetch";
 import axiosInstance from "@/lib/axios";
 import { Property } from "@/types/property";
 
 export interface PropertyQuery {
   search?: string;
-
   location?: string;
-
   propertyType?: string;
-
   minPrice?: number;
-
   maxPrice?: number;
-
   amenities?: string[];
 }
 
@@ -42,13 +36,18 @@ export const getProperties = async (
   }
 
   if (params?.amenities?.length) {
-    searchParams.set("amenities", params.amenities.join(","));
+    searchParams.set(
+      "amenities",
+      params.amenities.join(",")
+    );
   }
 
   const query = searchParams.toString();
 
   const response = await fetch(
-    `${process.env.BACKEND_API_URL}/api/properties${query ? `?${query}` : ""}`,
+    `${process.env.BACKEND_API_URL}/api/properties${
+      query ? `?${query}` : ""
+    }`,
     {
       next: {
         revalidate: 60,
@@ -66,34 +65,79 @@ export const getProperties = async (
   return result.data || [];
 };
 
-export const getPropertyById = async (id: string) => {
+/* =========================================
+   GET PROPERTY BY ID
+   PUBLIC API
+========================================= */
+
+export const getPropertyById = async (
+  id: string
+): Promise<Property | null> => {
   try {
     if (!id) {
       console.error("GET PROPERTY: Property ID missing");
       return null;
     }
-    const result = await authFetch(`/api/properties/${id}`);
+
+    const response = await fetch(
+      `${process.env.BACKEND_API_URL}/api/properties/${id}`,
+      {
+        next: {
+          revalidate: 60,
+          tags: [`property-${id}`],
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error(
+        "GET PROPERTY BY ID FAILED:",
+        response.status
+      );
+
+      return null;
+    }
+
+    const result = await response.json();
+
     if (!result?.success) {
       return null;
     }
-    return result.data;
+
+    return result.data || null;
   } catch (error) {
-    console.error("GET PROPERTY DETAILS ERROR:", error);
+    console.error(
+      "GET PROPERTY DETAILS ERROR:",
+      error
+    );
+
     return null;
   }
 };
 
+/* =========================================
+   GET ALL PROPERTIES
+========================================= */
+
 export const getAllProperties = async (): Promise<Property[]> => {
   try {
-    const { data } = await axiosInstance.get("/api/properties");
+    const { data } = await axiosInstance.get(
+      "/api/properties"
+    );
 
     if (!data?.success) {
       return [];
     }
 
-    return Array.isArray(data.data) ? data.data : [];
+    return Array.isArray(data.data)
+      ? data.data
+      : [];
   } catch (error) {
-    console.error("GET ALL PROPERTIES ERROR:", error);
+    console.error(
+      "GET ALL PROPERTIES ERROR:",
+      error
+    );
+
     return [];
   }
 };

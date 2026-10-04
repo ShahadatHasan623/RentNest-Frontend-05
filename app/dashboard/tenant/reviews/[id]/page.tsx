@@ -1,4 +1,4 @@
-
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import { Star } from "lucide-react";
 
@@ -23,23 +23,22 @@ interface ReviewPageProps {
 const ReviewPage = async ({ params }: ReviewPageProps) => {
   const { id } = await params;
 
-  console.log("REVIEW PROPERTY ID:", id);
-
   if (!id) {
     notFound();
   }
 
   const property = await getPropertyById(id);
 
-  console.log("PROPERTY DETAILS:", property);
-
   if (!property) {
     notFound();
   }
 
+  // Reviews are public
   const reviewsData = await getPropertyReviews(id);
 
-  console.log("PROPERTY REVIEWS:", reviewsData);
+  // Check login only for review submission
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 p-6">
@@ -56,6 +55,7 @@ const ReviewPage = async ({ params }: ReviewPageProps) => {
             {property.location || "Location unavailable"}
           </p>
 
+          {/* Rating */}
           <div className="mt-3 flex items-center gap-2">
             <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
 
@@ -70,10 +70,20 @@ const ReviewPage = async ({ params }: ReviewPageProps) => {
         </CardContent>
       </Card>
 
-      {/* Review Form */}
-      <ReviewForm propertyId={id} />
+      {/* Review Form - Login Required */}
+      {accessToken ? (
+        <ReviewForm propertyId={id} />
+      ) : (
+        <Card>
+          <CardContent className="py-6 text-center">
+            <p className="text-sm text-muted-foreground">
+              Please login to write a review.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* Reviews */}
+      {/* Public Reviews */}
       <Card>
         <CardHeader>
           <CardTitle>Customer Reviews</CardTitle>
@@ -97,6 +107,7 @@ const ReviewPage = async ({ params }: ReviewPageProps) => {
                         {review.tenant?.name || "Tenant"}
                       </p>
 
+                      {/* Stars */}
                       <div className="mt-1 flex gap-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                           <Star
@@ -132,4 +143,3 @@ const ReviewPage = async ({ params }: ReviewPageProps) => {
 };
 
 export default ReviewPage;
-

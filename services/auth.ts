@@ -56,7 +56,12 @@ export const getMe = async (): Promise<AuthUser | null> => {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
 
-  if (!accessToken) return null;
+
+
+  if (!accessToken) {
+    console.log("No access token");
+    return null;
+  }
 
   try {
     const response = await fetch(
@@ -69,12 +74,16 @@ export const getMe = async (): Promise<AuthUser | null> => {
       }
     );
 
-    if (!response.ok) return null;
-
     const result = await response.json();
 
+
+    if (!response.ok) {
+      return null;
+    }
+
     return result.success ? result.data : null;
-  } catch {
+  } catch (error) {
+    console.error("GET ME ERROR:", error);
     return null;
   }
 };

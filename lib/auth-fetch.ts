@@ -28,7 +28,6 @@ export const authFetch = async (
 
     const url = `${process.env.BACKEND_API_URL}${endpoint}`;
 
-    console.log("AUTH FETCH URL:", url);
 
     const response = await fetch(url, {
       ...options,
@@ -37,14 +36,8 @@ export const authFetch = async (
 
     const contentType = response.headers.get("content-type");
 
-    console.log("AUTH FETCH STATUS:", response.status);
-    console.log("AUTH FETCH CONTENT TYPE:", contentType);
 
     if (!response.ok) {
-      const text = await response.text();
-
-      console.error("AUTH FETCH ERROR RESPONSE:", text);
-
       return {
         success: false,
         message: `API request failed with status ${response.status}`,

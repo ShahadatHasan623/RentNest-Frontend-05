@@ -12,6 +12,7 @@ const PUBLIC_ROUTES = [
   "/about",
   "/payment/success",
   "/payment/cancel",
+  "/reviews"
 ];
 
 export async function proxy(request: NextRequest) {
@@ -21,10 +22,7 @@ export async function proxy(request: NextRequest) {
   const refreshToken = request.cookies.get("refreshToken")?.value;
 
   let decodedAccessToken = accessToken
-    ? jwtUtils.verifyToken(
-        accessToken,
-        process.env.JWT_ACCESS_SECRET as string
-      )
+    ? jwtUtils.verifyToken(accessToken, process.env.JWT_ACCESS_SECRET as string)
     : null;
 
   const decodedRefreshToken = refreshToken
@@ -34,9 +32,7 @@ export async function proxy(request: NextRequest) {
       )
     : null;
 
-  // =========================================
   // Refresh Access Token
-  // =========================================
 
   let newAccessToken: string | null = null;
 
@@ -55,9 +51,7 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // =========================================
   // Get User Role
-  // =========================================
 
   let userRole: string | null = null;
 
@@ -65,9 +59,7 @@ export async function proxy(request: NextRequest) {
     userRole = (decodedAccessToken.data as JwtPayload).role as string;
   }
 
-  // =========================================
   // Response
-  // =========================================
 
   const response = NextResponse.next();
 
@@ -81,56 +73,41 @@ export async function proxy(request: NextRequest) {
     });
   }
 
-  // =========================================
   // Invalid Token
-  // =========================================
 
   if (accessToken && !decodedAccessToken?.success && !refreshToken) {
     response.cookies.delete("accessToken");
     accessToken = undefined;
   }
 
-  // =========================================
   // Auth Routes
-  // =========================================
 
   const isAuthRoute = AUTH_ROUTES.some(
-    (route) =>
-      pathname === route || pathname.startsWith(route + "/")
+    (route) => pathname === route || pathname.startsWith(route + "/")
   );
 
   if (isAuthRoute && userRole) {
     if (userRole === "TENANT") {
-      return NextResponse.redirect(
-        new URL("/dashboard/tenant", request.url)
-      );
+      return NextResponse.redirect(new URL("/dashboard/tenant", request.url));
     }
 
     if (userRole === "LANDLORD") {
-      return NextResponse.redirect(
-        new URL("/dashboard/landlord", request.url)
-      );
+      return NextResponse.redirect(new URL("/dashboard/landlord", request.url));
     }
 
     if (userRole === "ADMIN") {
-      return NextResponse.redirect(
-        new URL("/dashboard/admin", request.url)
-      );
+      return NextResponse.redirect(new URL("/dashboard/admin", request.url));
     }
   }
 
-  // =========================================
   // Public Route
-  // =========================================
 
   const isPublicRoute = PUBLIC_ROUTES.some(
-    (route) =>
-      pathname === route || pathname.startsWith(route + "/")
+    (route) => pathname === route || pathname.startsWith(route + "/")
   );
 
-  // =========================================
   // Not Logged In
-  // =========================================
+ 
 
   if (!userRole && !isPublicRoute && !isAuthRoute) {
     const redirectUrl = new URL("/auth/login", request.url);
@@ -143,31 +120,24 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(redirectUrl);
   }
 
-  // =========================================
   // Role Protection
-  // =========================================
+ 
 
   if (pathname.startsWith("/dashboard/tenant")) {
     if (userRole !== "TENANT") {
-      return NextResponse.redirect(
-        new URL("/auth/login", request.url)
-      );
+      return NextResponse.redirect(new URL("/auth/login", request.url));
     }
   }
 
   if (pathname.startsWith("/dashboard/landlord")) {
     if (userRole !== "LANDLORD") {
-      return NextResponse.redirect(
-        new URL("/auth/login", request.url)
-      );
+      return NextResponse.redirect(new URL("/auth/login", request.url));
     }
   }
 
   if (pathname.startsWith("/dashboard/admin")) {
     if (userRole !== "ADMIN") {
-      return NextResponse.redirect(
-        new URL("/auth/login", request.url)
-      );
+      return NextResponse.redirect(new URL("/auth/login", request.url));
     }
   }
 
@@ -175,7 +145,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!api|_next/static|favicon.ico|_next/image|.*\\.png$).*)",
-  ],
+  matcher: ["/((?!api|_next/static|favicon.ico|_next/image|.*\\.png$).*)"],
 };

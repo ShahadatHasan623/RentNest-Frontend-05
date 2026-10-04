@@ -12,7 +12,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { getMe } from "@/services/auth";
 import DashboardSidebar from "./components/dashboard/DashboardSidebar";
 import DashboardHeader from "./components/dashboard/DashboardHeader";
-import Navbar from "@/_components/public/Navbar";
+
 
 const DashboardLayout = async ({
   children,

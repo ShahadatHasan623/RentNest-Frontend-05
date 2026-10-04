@@ -28,7 +28,6 @@ export interface PropertyReviews {
   reviews: Review[];
 }
 
-// My Reviews-এর জন্য
 export interface MyReview extends Review {
   property?: {
     id: string;
@@ -41,7 +40,7 @@ export interface MyReview extends Review {
   };
 }
 
-// Create Review
+// Create Review → Login Required
 export const createReview = async (payload: CreateReviewPayload) => {
   try {
     const result = await authFetch("/api/reviews", {
@@ -60,53 +59,55 @@ export const createReview = async (payload: CreateReviewPayload) => {
   }
 };
 
-// Property Details → Customer Reviews
+// Property Details → PUBLIC Reviews
 export const getPropertyReviews = async (
   propertyId: string
 ): Promise<PropertyReviews> => {
+  const emptyResult: PropertyReviews = {
+    averageRating: 0,
+    totalReviews: 0,
+    reviews: [],
+  };
+
   try {
     if (!propertyId) {
-      return {
-        averageRating: 0,
-        totalReviews: 0,
-        reviews: [],
-      };
+      return emptyResult;
     }
 
-    const result = await authFetch(`/api/reviews/property/${propertyId}`);
-
-
-    if (!result?.success) {
-      return {
-        averageRating: 0,
-        totalReviews: 0,
-        reviews: [],
-      };
-    }
-
-    return (
-      result.data ?? {
-        averageRating: 0,
-        totalReviews: 0,
-        reviews: [],
+    const response = await fetch(
+      `${process.env.BACKEND_API_URL}/api/reviews/property/${propertyId}`,
+      {
+        cache: "no-store",
       }
     );
+
+    if (!response.ok) {
+      console.error(
+        "GET PROPERTY REVIEWS FAILED:",
+        response.status
+      );
+
+      return emptyResult;
+    }
+
+    const result = await response.json();
+
+    if (!result?.success) {
+      return emptyResult;
+    }
+
+    return result.data ?? emptyResult;
   } catch (error) {
     console.error("GET PROPERTY REVIEWS ERROR:", error);
 
-    return {
-      averageRating: 0,
-      totalReviews: 0,
-      reviews: [],
-    };
+    return emptyResult;
   }
 };
 
-// Tenant Dashboard → My Reviews
+// Tenant Dashboard → My Reviews → Login Required
 export const getMyReviews = async (): Promise<MyReview[]> => {
   try {
     const result = await authFetch("/api/reviews/my-reviews");
-
 
     if (!result?.success) {
       return [];

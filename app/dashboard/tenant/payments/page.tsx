@@ -1,10 +1,13 @@
 import { getMyPayments } from "@/services/payments";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Suspense } from "react";
+
 
 const TenantPaymentsPage = async () => {
   const payments = await getMyPayments();
 
   return (
+
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Payment History</h1>
@@ -33,13 +36,12 @@ const TenantPaymentsPage = async () => {
                   </CardTitle>
 
                   <span
-                    className={`w-fit rounded-full px-3 py-1 text-sm font-medium ${
-                      payment.status === "COMPLETED"
-                        ? "bg-green-100 text-green-700"
-                        : payment.status === "PENDING"
-                          ? "bg-yellow-100 text-yellow-700"
-                          : "bg-red-100 text-red-700"
-                    }`}
+                    className={`w-fit rounded-full px-3 py-1 text-sm font-medium ${payment.status === "COMPLETED"
+                      ? "bg-green-100 text-green-700"
+                      : payment.status === "PENDING"
+                        ? "bg-yellow-100 text-yellow-700"
+                        : "bg-red-100 text-red-700"
+                      }`}
                   >
                     {payment.status}
                   </span>
