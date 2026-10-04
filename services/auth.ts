@@ -18,17 +18,14 @@ export interface LoginPayload {
 export const registerUser = async (
   payload: RegisterPayload
 ): Promise<AuthResponse> => {
-  const response = await fetch(
-    `${API_URL}/api/auth/register`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${API_URL}/api/auth/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
 
   return response.json();
 };
@@ -36,50 +33,40 @@ export const registerUser = async (
 export const loginUser = async (
   payload: LoginPayload
 ): Promise<AuthResponse> => {
-  const response = await fetch(
-    `${API_URL}/api/auth/login`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-      cache: "no-store",
-    }
-  );
+  const response = await fetch(`${API_URL}/api/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  });
 
   return response.json();
 };
 
-
 export const getMe = async (): Promise<AuthUser | null> => {
   const cookieStore = await cookies();
+
   const accessToken = cookieStore.get("accessToken")?.value;
 
-
-
   if (!accessToken) {
-    console.log("No access token");
     return null;
   }
 
   try {
-    const response = await fetch(
-      `${API_URL}/api/auth/me`,
-      {
-        headers: {
-          Cookie: `accessToken=${accessToken}`,
-        },
-        cache: "no-store",
-      }
-    );
-
-    const result = await response.json();
-
+    const response = await fetch(`${API_URL}/api/auth/me`, {
+      headers: {
+        Cookie: `accessToken=${accessToken}`,
+      },
+      cache: "no-store",
+    });
 
     if (!response.ok) {
       return null;
     }
+
+    const result = await response.json();
 
     return result.success ? result.data : null;
   } catch (error) {
