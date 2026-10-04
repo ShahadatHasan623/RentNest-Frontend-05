@@ -1,4 +1,4 @@
-import { Toaster } from "sonner";
+
 export default function PublicLayout({
   children,
 }: {
@@ -10,7 +10,6 @@ export default function PublicLayout({
       <main className="flex-1">
         {children}
       </main>
-      <Toaster richColors position="bottom-right" />
     </div>
   );
 }

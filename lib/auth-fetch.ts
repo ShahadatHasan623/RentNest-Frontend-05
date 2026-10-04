@@ -4,34 +4,74 @@ export const authFetch = async (
   endpoint: string,
   options: RequestInit = {}
 ) => {
-  const auth = await getAccessToken();
+  try {
+    const auth = await getAccessToken();
 
-  if (!auth.success || !auth.accessToken) {
+    if (!auth.success || !auth.accessToken) {
+      return {
+        success: false,
+        message: auth.message || "Unauthorized",
+        data: null,
+      };
+    }
+
+    const headers = new Headers(options.headers);
+
+    headers.set(
+      "Cookie",
+      `accessToken=${auth.accessToken}`
+    );
+
+    if (options.body && !headers.has("Content-Type")) {
+      headers.set("Content-Type", "application/json");
+    }
+
+    const url = `${process.env.BACKEND_API_URL}${endpoint}`;
+
+    console.log("AUTH FETCH URL:", url);
+
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+
+    const contentType = response.headers.get("content-type");
+
+    console.log("AUTH FETCH STATUS:", response.status);
+    console.log("AUTH FETCH CONTENT TYPE:", contentType);
+
+    if (!response.ok) {
+      const text = await response.text();
+
+      console.error("AUTH FETCH ERROR RESPONSE:", text);
+
+      return {
+        success: false,
+        message: `API request failed with status ${response.status}`,
+        data: null,
+      };
+    }
+
+    if (!contentType?.includes("application/json")) {
+      const text = await response.text();
+
+      console.error("EXPECTED JSON BUT GOT:", text);
+
+      return {
+        success: false,
+        message: "API returned a non-JSON response",
+        data: null,
+      };
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("AUTH FETCH ERROR:", error);
+
     return {
       success: false,
-      message: auth.message || "Unauthorized",
+      message: "Failed to fetch API",
       data: null,
     };
   }
-
-  const headers = new Headers(options.headers);
-
-  headers.set(
-    "Cookie",
-    `accessToken=${auth.accessToken}`
-  );
-
-  if (options.body && !headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json");
-  }
-
-  const response = await fetch(
-    `${process.env.BACKEND_API_URL}${endpoint}`,
-    {
-      ...options,
-      headers,
-    }
-  );
-
-  return response.json();
 };

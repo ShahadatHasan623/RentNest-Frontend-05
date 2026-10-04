@@ -1,4 +1,5 @@
 import { authFetch } from "@/lib/auth-fetch";
+import { User, UserQuery } from "@/types/user";
 
 export interface AdminUser {
   id: string;
@@ -10,19 +11,48 @@ export interface AdminUser {
   createdAt: string;
 }
 
-export const getAllUsers = async (): Promise<AdminUser[]> => {
-  try {
-    const result = await authFetch("/api/auth");
+export const getAllUsers = async (
+  params?: UserQuery
+): Promise<User> => {
+  const query = new URLSearchParams();
 
-    console.log("ALL USERS:", result);
+  query.set("page", String(params?.page || 1));
+  query.set("limit", String(params?.limit || 10));
 
-    if (!result?.success) return [];
+  if (params?.search?.trim()) {
+    query.set("search", params.search.trim());
+  }
 
-    return Array.isArray(result.data) ? result.data : [];
-  } catch (error) {
-    console.error("GET ALL USERS ERROR:", error);
+  const result = await authFetch(
+    `/api/auth?${query.toString()}`
+  );
+
+  if (!result?.success || !result?.data) {
+    return {
+      users: [],
+      meta: {
+        page: params?.page || 1,
+        limit: params?.limit || 10,
+        total: 0,
+        totalPages: 0,
+      },
+    };
+  }
+
+  return result.data;
+};
+export const getAllUsersForDashboard = async (): Promise<
+  AdminUser[]
+> => {
+  const result = await authFetch(
+    "/api/auth?limit=10000"
+  );
+
+  if (!result?.success || !result?.data) {
     return [];
   }
+
+  return result.data.users || [];
 };
 
 export const updateUserStatus = async (

@@ -22,3 +22,8 @@ export interface User {
 
   createdAt?: string;
 }
+export interface UserQuery {
+  search?: string;
+  page?: number;
+  limit?: number;
+}

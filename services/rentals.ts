@@ -25,8 +25,6 @@ export const getMyRentals = async (): Promise<RentalRequest[]> => {
   try {
     const result = await authFetch("/api/rentals");
 
-    console.log("MY RENTALS:", result);
-
     if (!result?.success) {
       return [];
     }
@@ -43,8 +41,6 @@ export const getRentalById = async (
 ): Promise<RentalRequest | null> => {
   try {
     const result = await authFetch(`/api/rentals/${id}`);
-
-    console.log("RENTAL DETAILS:", result);
 
     if (!result?.success) {
       return null;

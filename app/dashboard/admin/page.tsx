@@ -1,4 +1,3 @@
-import { getAllUsers } from "@/services/users";
 import {
   Users,
   UserCheck,
@@ -6,8 +5,12 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import { getAllUsersForDashboard } from "@/services/users";
+
 const AdminDashboardPage = async () => {
-  const users = await getAllUsers();
+  const users = await getAllUsersForDashboard();
+
+  console.log("ADMIN DASHBOARD USERS:", users);
 
   const totalUsers = users.length;
 
@@ -19,6 +22,10 @@ const AdminDashboardPage = async () => {
     (user) => user.activeStatus === "BLOCKED"
   ).length;
 
+  const inactiveUsers = users.filter(
+    (user) => user.activeStatus === "INACTIVE"
+  ).length;
+
   const landlords = users.filter(
     (user) => user.role === "LANDLORD"
   ).length;
@@ -27,8 +34,13 @@ const AdminDashboardPage = async () => {
     (user) => user.role === "TENANT"
   ).length;
 
+  const admins = users.filter(
+    (user) => user.role === "ADMIN"
+  ).length;
+
   return (
     <div className="space-y-8">
+
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold">
@@ -42,39 +54,51 @@ const AdminDashboardPage = async () => {
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+
         <StatCard
           title="Total Users"
           value={totalUsers}
-          icon={<Users className="h-5 w-5" />}
+          icon={
+            <Users className="h-5 w-5" />
+          }
         />
 
         <StatCard
           title="Active Users"
           value={activeUsers}
-          icon={<UserCheck className="h-5 w-5" />}
+          icon={
+            <UserCheck className="h-5 w-5" />
+          }
         />
 
         <StatCard
           title="Blocked Users"
           value={blockedUsers}
-          icon={<UserX className="h-5 w-5" />}
+          icon={
+            <UserX className="h-5 w-5" />
+          }
         />
 
         <StatCard
           title="Landlords"
           value={landlords}
-          icon={<ShieldCheck className="h-5 w-5" />}
+          icon={
+            <ShieldCheck className="h-5 w-5" />
+          }
         />
+
       </div>
 
       {/* User Overview */}
       <div className="grid gap-6 md:grid-cols-2">
+
         <div className="rounded-xl border p-6">
           <h2 className="text-lg font-semibold">
             User Overview
           </h2>
 
           <div className="mt-5 space-y-4">
+
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">
                 Tenants
@@ -101,20 +125,21 @@ const AdminDashboardPage = async () => {
               </span>
 
               <span className="font-semibold">
-                {users.filter(
-                  (user) => user.role === "ADMIN"
-                ).length}
+                {admins}
               </span>
             </div>
+
           </div>
         </div>
 
+        {/* Account Status */}
         <div className="rounded-xl border p-6">
           <h2 className="text-lg font-semibold">
             Account Status
           </h2>
 
           <div className="mt-5 space-y-4">
+
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">
                 Active
@@ -141,16 +166,13 @@ const AdminDashboardPage = async () => {
               </span>
 
               <span className="font-semibold text-yellow-600">
-                {
-                  users.filter(
-                    (user) =>
-                      user.activeStatus === "INACTIVE"
-                  ).length
-                }
+                {inactiveUsers}
               </span>
             </div>
+
           </div>
         </div>
+
       </div>
     </div>
   );
@@ -167,7 +189,9 @@ const StatCard = ({
 }) => {
   return (
     <div className="rounded-xl border p-5">
+
       <div className="flex items-center justify-between">
+
         <p className="text-sm text-muted-foreground">
           {title}
         </p>
@@ -175,11 +199,13 @@ const StatCard = ({
         <div className="rounded-lg bg-muted p-2">
           {icon}
         </div>
+
       </div>
 
       <p className="mt-3 text-3xl font-bold">
         {value}
       </p>
+
     </div>
   );
 };

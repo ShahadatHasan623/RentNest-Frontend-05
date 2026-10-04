@@ -49,8 +49,6 @@ export const createReview = async (payload: CreateReviewPayload) => {
       body: JSON.stringify(payload),
     });
 
-    console.log("CREATE REVIEW API RESULT:", result);
-
     return result;
   } catch (error) {
     console.error("CREATE REVIEW ERROR:", error);
@@ -77,7 +75,6 @@ export const getPropertyReviews = async (
 
     const result = await authFetch(`/api/reviews/property/${propertyId}`);
 
-    console.log("PROPERTY REVIEWS RESULT:", result);
 
     if (!result?.success) {
       return {
@@ -110,7 +107,6 @@ export const getMyReviews = async (): Promise<MyReview[]> => {
   try {
     const result = await authFetch("/api/reviews/my-reviews");
 
-    console.log("MY REVIEWS RESULT:", result);
 
     if (!result?.success) {
       return [];

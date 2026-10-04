@@ -26,7 +26,7 @@ export default function RootLayout({
 
             <Toaster
               richColors
-              position="bottom-right"
+              position="top-right"
             />
           </div>
         </Providers>
