@@ -71,7 +71,7 @@ const Navbar = ({ user }: NavbarProps) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
-  // Route change হলে mobile menu close
+
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);

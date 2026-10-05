@@ -1,13 +1,19 @@
 "use client";
 
-import { ReactNode } from "react";
+// ...existing imports (Redux, Session, etc.)
 
-interface ProvidersProps {
-  children: ReactNode;
-}
+import { TooltipProvider } from "@/components/ui/tooltip";
 
-const Providers = ({ children }: ProvidersProps) => {
-  return <>{children}</>;
+const Providers = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <TooltipProvider delayDuration={0}>
+      {/* ...existing providers... */}
+
+      {children}
+
+      {/* ...existing providers... */}
+    </TooltipProvider>
+  );
 };
 
 export default Providers;
