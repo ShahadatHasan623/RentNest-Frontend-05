@@ -40,8 +40,14 @@ export interface MyReview extends Review {
   };
 }
 
-// Create Review → Login Required
-export const createReview = async (payload: CreateReviewPayload) => {
+/* =========================================
+   CREATE REVIEW
+   LOGIN REQUIRED
+========================================= */
+
+export const createReview = async (
+  payload: CreateReviewPayload
+) => {
   try {
     const result = await authFetch("/api/reviews", {
       method: "POST",
@@ -59,7 +65,11 @@ export const createReview = async (payload: CreateReviewPayload) => {
   }
 };
 
-// Property Details → PUBLIC Reviews
+/* =========================================
+   GET PROPERTY REVIEWS
+   PUBLIC API
+========================================= */
+
 export const getPropertyReviews = async (
   propertyId: string
 ): Promise<PropertyReviews> => {
@@ -71,11 +81,19 @@ export const getPropertyReviews = async (
 
   try {
     if (!propertyId) {
+      console.error("PROPERTY REVIEW: Property ID missing");
+      return emptyResult;
+    }
+
+    const baseUrl = process.env.BACKEND_API_URL;
+
+    if (!baseUrl) {
+      console.error("BACKEND_API_URL is not configured");
       return emptyResult;
     }
 
     const response = await fetch(
-      `${process.env.BACKEND_API_URL}/api/reviews/property/${propertyId}`,
+      `${baseUrl}/api/reviews/property/${propertyId}`,
       {
         cache: "no-store",
       }
@@ -84,7 +102,8 @@ export const getPropertyReviews = async (
     if (!response.ok) {
       console.error(
         "GET PROPERTY REVIEWS FAILED:",
-        response.status
+        response.status,
+        response.statusText
       );
 
       return emptyResult;
@@ -92,19 +111,66 @@ export const getPropertyReviews = async (
 
     const result = await response.json();
 
+
     if (!result?.success) {
+      console.error(
+        "PROPERTY REVIEWS API ERROR:",
+        result?.message
+      );
+
       return emptyResult;
     }
 
-    return result.data ?? emptyResult;
+    const data = result.data;
+
+    if (
+      data &&
+      typeof data === "object" &&
+      Array.isArray(data.reviews)
+    ) {
+      return {
+        averageRating: Number(data.averageRating) || 0,
+        totalReviews:
+          Number(data.totalReviews) || data.reviews.length,
+        reviews: data.reviews,
+      };
+    }
+
+    if (
+      data?.data &&
+      typeof data.data === "object" &&
+      Array.isArray(data.data.reviews)
+    ) {
+      return {
+        averageRating: Number(data.data.averageRating) || 0,
+        totalReviews:
+          Number(data.data.totalReviews) ||
+          data.data.reviews.length,
+        reviews: data.data.reviews,
+      };
+    }
+
+    console.error(
+      "INVALID PROPERTY REVIEWS RESPONSE:",
+      result
+    );
+
+    return emptyResult;
   } catch (error) {
-    console.error("GET PROPERTY REVIEWS ERROR:", error);
+    console.error(
+      "GET PROPERTY REVIEWS ERROR:",
+      error
+    );
 
     return emptyResult;
   }
 };
 
-// Tenant Dashboard → My Reviews → Login Required
+/* =========================================
+   GET MY REVIEWS
+   LOGIN REQUIRED
+========================================= */
+
 export const getMyReviews = async (): Promise<MyReview[]> => {
   try {
     const result = await authFetch("/api/reviews/my-reviews");
@@ -113,7 +179,9 @@ export const getMyReviews = async (): Promise<MyReview[]> => {
       return [];
     }
 
-    return result.data ?? [];
+    return Array.isArray(result.data)
+      ? result.data
+      : [];
   } catch (error) {
     console.error("GET MY REVIEWS ERROR:", error);
 
