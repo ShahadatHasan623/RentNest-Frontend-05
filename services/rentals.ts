@@ -1,25 +1,5 @@
 import { authFetch } from "@/lib/auth-fetch";
-import { AdminRentalResponse } from "@/types/rental";
-
-export interface RentalRequest {
-  id: string;
-  tenantId: string;
-  landlordId: string;
-  propertyId: string;
-  moveInDate: string;
-  duration: number;
-  status: string;
-
-  property?: {
-    id: string;
-    title: string;
-    rent?: number;
-    location?: string;
-    images?: string[];
-  };
-
-  payment?: unknown[];
-}
+import type { RentalRequest } from "@/types/rental";
 
 export const getMyRentals = async (): Promise<RentalRequest[]> => {
   try {
@@ -29,7 +9,17 @@ export const getMyRentals = async (): Promise<RentalRequest[]> => {
       return [];
     }
 
-    return Array.isArray(result.data) ? result.data : [];
+    // Direct array response
+    if (Array.isArray(result.data)) {
+      return result.data;
+    }
+
+    // Paginated/object response
+    if (Array.isArray(result.data?.data)) {
+      return result.data.data;
+    }
+
+    return [];
   } catch (error) {
     console.error("GET MY RENTALS ERROR:", error);
     return [];
@@ -61,12 +51,10 @@ export const getLandlordRequests = async (): Promise<RentalRequest[]> => {
       return [];
     }
 
-    // Pagination response
     if (Array.isArray(result.data?.data)) {
       return result.data.data;
     }
 
-    // Normal array response
     if (Array.isArray(result.data)) {
       return result.data;
     }
@@ -74,7 +62,6 @@ export const getLandlordRequests = async (): Promise<RentalRequest[]> => {
     return [];
   } catch (error) {
     console.error("GET LANDLORD REQUESTS ERROR:", error);
-
     return [];
   }
 };
@@ -84,16 +71,20 @@ export const updateRentalStatus = async (
   status: "APPROVED" | "REJECTED" | "COMPLETED"
 ) => {
   try {
-    const result = await authFetch(`/api/rentals/landlord/requests/${id}`, {
+    return await authFetch(`/api/rentals/landlord/requests/${id}`, {
       method: "PATCH",
       body: JSON.stringify({ status }),
     });
-    return result;
   } catch (error) {
     console.error("UPDATE RENTAL STATUS ERROR:", error);
-    return { success: false, message: "Failed to update rental status" };
+
+    return {
+      success: false,
+      message: "Failed to update rental status",
+    };
   }
 };
+
 export const getAdminRentalRequests = async (): Promise<RentalRequest[]> => {
   try {
     const result = await authFetch("/api/admin/rentals");
@@ -102,10 +93,17 @@ export const getAdminRentalRequests = async (): Promise<RentalRequest[]> => {
       return [];
     }
 
-    return Array.isArray(result.data?.data) ? result.data.data : [];
+    if (Array.isArray(result.data?.data)) {
+      return result.data.data;
+    }
+
+    if (Array.isArray(result.data)) {
+      return result.data;
+    }
+
+    return [];
   } catch (error) {
     console.error("GET ADMIN RENTAL REQUESTS ERROR:", error);
-
     return [];
   }
 };

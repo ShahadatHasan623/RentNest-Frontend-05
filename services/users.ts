@@ -11,9 +11,19 @@ export interface AdminUser {
   createdAt: string;
 }
 
+export interface UsersResponse {
+  users: User[];
+  meta: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
 export const getAllUsers = async (
   params?: UserQuery
-): Promise<User> => {
+): Promise<UsersResponse> => {
   const query = new URLSearchParams();
 
   query.set("page", String(params?.page || 1));
@@ -41,6 +51,7 @@ export const getAllUsers = async (
 
   return result.data;
 };
+
 export const getAllUsersForDashboard = async (): Promise<
   AdminUser[]
 > => {

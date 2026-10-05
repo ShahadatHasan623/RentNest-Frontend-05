@@ -7,14 +7,15 @@ export type RentalRequestStatus =
 
 export interface RentalRequest {
   id: string;
-
   propertyId: string;
   tenantId: string;
+  landlordId?: string;
 
   status: RentalRequestStatus;
 
+  moveInDate?: string;
+  duration?: number;
   message?: string;
-
   createdAt: string;
 
   property?: {
@@ -30,6 +31,17 @@ export interface RentalRequest {
     name?: string;
     email?: string;
   };
+
+  landlord?: {
+    id: string;
+    name?: string;
+    email?: string;
+  };
+
+  payment?: {
+    id?: string;
+    status?: string;
+  };
 }
 
 export interface AdminRentalResponse {
@@ -38,5 +50,6 @@ export interface AdminRentalResponse {
     page: number;
     limit: number;
     total: number;
+    totalPages?: number;
   };
 }

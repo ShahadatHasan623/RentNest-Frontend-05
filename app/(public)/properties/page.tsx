@@ -34,7 +34,7 @@ const PropertiesPage = async ({
   });
 
   return (
-    <main className="container mx-auto px-4 py-10">
+    <main className="container mx-auto px-4 my-15">
 
       {/* Header */}
       <div className="mb-10">
