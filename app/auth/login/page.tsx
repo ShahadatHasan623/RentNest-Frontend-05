@@ -1,12 +1,12 @@
 import { Suspense } from "react";
 import LoginForm from "../_actions/LoginForm";
-import LoginFormSkeleton from "../_actions/loginSkelton";
+import AuthSkeleton from "../_actions/AuthSkelton";
 
 
 const LoginPage = () => {
   return (
     <main className="flex min-h-[calc(100vh-64px)] items-center justify-center bg-muted/30 px-4 py-10">
-      <Suspense fallback={<LoginFormSkeleton/>}>
+      <Suspense fallback={<AuthSkeleton/>}>
         <LoginForm />
       </Suspense>
     </main>
