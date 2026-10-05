@@ -1,8 +1,8 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useTransition, type ReactNode } from "react";
 import Link from "next/link";
-import { Bell, LogOut, Settings, UserRound } from "lucide-react";
+import { Bell, Loader2, LogOut, Settings, UserRound } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -24,6 +24,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+
+import { logoutAction } from "@/app/auth/_actions/logout";
 
 interface HeaderBreadcrumb {
   label: string;
@@ -66,7 +68,19 @@ const DashboardHeader = ({
   user,
   children,
 }: DashboardHeaderProps) => {
+  const [isPending, startTransition] = useTransition();
+
   const hasBreadcrumbs = !!breadcrumbs?.length;
+
+  /* ---------- logout handler ---------- */
+
+  const handleLogout = () => {
+    startTransition(async () => {
+      await logoutAction();
+      // jodi logoutAction nijei redirect na kore,
+      // tokhan ekhane manually redirect lagbe (niche note dekhun)
+    });
+  };
 
   return (
     <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b bg-background/80 px-4 backdrop-blur-md supports-[backdrop-filter]:bg-background/60 md:px-6">
@@ -153,6 +167,7 @@ const DashboardHeader = ({
               <Button
                 variant="ghost"
                 className="h-9 gap-2 rounded-lg px-1.5 md:px-2"
+                disabled={isPending}
               >
                 <Avatar className="size-7 rounded-lg border md:size-8">
                   {user.avatar && (
@@ -197,9 +212,25 @@ const DashboardHeader = ({
 
               <DropdownMenuSeparator />
 
-              <DropdownMenuItem className="cursor-pointer text-destructive focus:text-destructive">
-                <LogOut className="size-4" />
-                Log out
+              {/* ============ Logout ============ */}
+              <DropdownMenuItem
+                className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive"
+                disabled={isPending}
+                onSelect={(event) => {
+                  // dropdown default close behavior thakuk,
+                  // tarpor transition e logout call hobe
+                  event.preventDefault();
+
+                  handleLogout();
+                }}
+              >
+                {isPending ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  <LogOut className="size-4" />
+                )}
+
+                {isPending ? "Logging out..." : "Log out"}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
